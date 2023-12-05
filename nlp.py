@@ -1,4 +1,4 @@
-from turtle import color
+from datetime import datetime
 import pandas as pd
 from textblob import TextBlob
 import matplotlib.pyplot as plt
@@ -13,19 +13,14 @@ def main():
 
     # !Step one
     def get_month(dateString: str):
-        MDY = dateString.split(" ")
-        MDY[0] = re.sub(f"\D", "", MDY[0])
-
-        if MDY[0][0] == "0":
-            MDY[0] = MDY[0][1:]
-
-        month = MDY[0]
-        return int(month)
+        date = datetime.strptime(dateString, "%m %d, %Y")
+        month = date.month
+        return month
 
     def get_year(dateString: str):
-        MDY = dateString.split(" ")
-        year = MDY[2]
-        return int(year)
+        date = datetime.strptime(dateString, "%m %d, %Y")
+        year = date.year
+        return year
 
     def get_word_count(comment: str):
         if comment == "" or pd.isna(comment):
@@ -70,17 +65,56 @@ def main():
     reviews_per_month_df = reviews_per_month_df.reset_index().sort_values(by="month")
 
     y_ticks = np.arange(0, 5500, 500)
+
     month_names = [
         calendar.month_name[month] for month in reviews_per_month_df["month"].values
     ]
+
+    print(reviews_per_month_df, end="\n\n")
+
     plt.figure()
     plt.bar(month_names, reviews_per_month_df["count"])
-    plt.plot(reviews_per_month_df["month"], reviews_per_month_df["count"], color="red")
+    plt.plot(month_names, reviews_per_month_df["count"], color="red")
     plt.title("Number of Reviews by Month")
     plt.xlabel("Month")
     plt.ylabel("Number of Reviews")
     plt.yticks(y_ticks)
     plt.xticks(rotation=45)
+    # plt.show()
+
+    # !Step 5
+    review_sentiment_df = nlp_df.groupby(["overall"])["sentiment_type"].value_counts()
+    review_sentiment_df = review_sentiment_df.reset_index()
+
+    pivot_df = review_sentiment_df.pivot(
+        index="overall", columns="sentiment_type", values="count"
+    )
+
+    y_ticks = np.arange(0, 30_000, 2_000)
+
+    print(pivot_df, end="\n\n")
+
+    pivot_df.plot(kind="bar", legend=True)
+    plt.xlabel("Rating")
+    plt.ylabel("Number of Ratings")
+    plt.title("Sentiment Type Distribution Across Ratings")
+    plt.yticks(y_ticks)
+    # plt.show()
+
+    # !Step 6
+    average_sent_rating_df = (
+        nlp_df.groupby("overall")["sentiment_score"].mean()
+    ).to_frame()
+
+    y_ticks = np.arange(0.000, 0.275, 0.025)
+
+    print(average_sent_rating_df.reset_index(), end="\n\n")
+
+    average_sent_rating_df.plot(kind="bar", legend=False)
+    plt.xlabel("Rating")
+    plt.ylabel("Average Sentiment Score")
+    plt.yticks(y_ticks)
+    plt.title("Average Sentiment Score Acress Ratings")
     plt.show()
 
 
