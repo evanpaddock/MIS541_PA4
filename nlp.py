@@ -137,8 +137,7 @@ def main():
 
     plt.figure()
     sns.barplot(
-        x=overall_word_count_df["overall"],
-        y=overall_word_count_df["word_count"]
+        x=overall_word_count_df["overall"], y=overall_word_count_df["word_count"]
     )
     plt.xlabel("Rating")
     plt.ylabel("Average Word Count")

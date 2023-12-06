@@ -83,9 +83,7 @@ def main():
 
     sns.set(style="whitegrid")
     plt.figure(figsize=(10, 6))
-    sns.histplot(
-        reg_df["age"], bins=20, palette="viridis"
-    )
+    sns.histplot(reg_df["age"], bins=20, palette="viridis")
 
     plt.xlabel("Age (Year Built - 2015)")
     plt.ylabel("Frequency")
