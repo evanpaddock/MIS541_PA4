@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 from statsmodels.formula.api import ols
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 def main():
     reg_df = pd.read_csv("pa4_reg_data.txt", sep="\t")
@@ -35,7 +36,6 @@ def main():
     plt.title("Sqft Living vs. House Price")
     plt.xlabel("Sqft Living")
     plt.ylabel("House Price($ millions)")
-    # plt.show()
 
     # !Step Five
     def get_mean_absolute_error(reg_df: pd.DataFrame):
@@ -52,11 +52,19 @@ def main():
 
         return MSE / len(reg_df)
 
-    MAE = get_mean_absolute_error(reg_df)
-    MSE = get_mean_sqrd_error(reg_df)
-    RMSE = MSE**0.5
+    my_MAE = get_mean_absolute_error(reg_df)
+    my_MSE = get_mean_sqrd_error(reg_df)
+    my_RMSE = my_MSE**0.5
+    
+    MAE = mean_absolute_error(reg_df["price"], reg_df["price_pred"])
+    MSE = mean_squared_error(reg_df["price"], reg_df["price_pred"])
+    RMSE = MSE ** 0.5
+    
+
+    print("My mean absolute error: " + str(my_MAE))
+    print("My root mean squared error: " + str(my_RMSE), end="\n\n")
 
     print("Mean absolute error: " + str(MAE))
-    print("Mean absolute error: " + str(RMSE), end="\n\n")
-
+    print("Root mean squared error: " + str(RMSE), end="\n\n")
+    plt.show()
 main()
