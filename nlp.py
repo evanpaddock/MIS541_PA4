@@ -8,8 +8,8 @@ import calendar
 
 
 def main():
-    # //nlp_df = pd.read_csv("pa4_nlp_data.txt", sep="\t")
-    nlp_df = pd.read_csv("nlp_with_sentiment.txt", sep="\t")
+    nlp_df = pd.read_csv("pa4_nlp_data.txt", sep="\t")
+    #  //nlp_df = pd.read_csv("nlp_with_sentiment.txt", sep="\t")
 
     # !Step one
     def get_month(dateString: str):
@@ -52,13 +52,13 @@ def main():
         else:
             return "neutral"
 
-    # //nlp_df["sentiment_score"] = nlp_df["reviewText"].apply(get_sentiment_score)
-    # //nlp_df["sentiment_type"] = nlp_df["sentiment_score"].apply(get_sentiment_type)
+    nlp_df["sentiment_score"] = nlp_df["reviewText"].apply(get_sentiment_score)
+    nlp_df["sentiment_type"] = nlp_df["sentiment_score"].apply(get_sentiment_type)
 
     # !Step 3
 
     print(nlp_df[["overall", "word_count", "sentiment_score"]].describe(), end="\n\n")
-    # //nlp_df.to_csv("nlp_with_sentiment.txt", sep="\t")
+    nlp_df.to_csv("nlp_with_sentiment.txt", sep="\t")
 
     # !Step 4
     reviews_per_month_df = nlp_df["month"].value_counts().to_frame()
@@ -115,6 +115,35 @@ def main():
     plt.ylabel("Average Sentiment Score")
     plt.yticks(y_ticks)
     plt.title("Average Sentiment Score Acress Ratings")
+
+    # !Extras
+    import seaborn as sns
+
+    sns.set(style="whitegrid")
+    plt.figure(figsize=(10, 6))
+    sns.histplot(
+        nlp_df[nlp_df["word_count"] < 800]["word_count"], bins=100
+    )  # Removing word_count > 800 to show marjority in more detail
+
+    plt.xlabel("Count")
+    plt.ylabel("Frequency")
+    plt.title("Histogram of Word Count Distributions")
+
+    overall_word_count_df = (
+        nlp_df.groupby(["overall"])["word_count"].mean().to_frame().reset_index()
+    )
+
+    print(overall_word_count_df, end="\n\n")
+
+    plt.figure()
+    sns.barplot(
+        x=overall_word_count_df["overall"],
+        y=overall_word_count_df["word_count"]
+    )
+    plt.xlabel("Rating")
+    plt.ylabel("Average Word Count")
+    plt.title("Average Word Count by Rating")
+
     plt.show()
 
 
